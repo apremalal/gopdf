@@ -1,3 +1,5 @@
+.idea
+*.iml
 ##android
 # built application files
 *.apk

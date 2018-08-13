@@ -57,6 +57,12 @@ type GoPdf struct {
 	//info
 	isUseInfo bool
 	info      *PdfInfo
+
+	// tracker to find the total number of pages
+	pageCount int
+
+	//track the number of objects in a page before a page break
+	pageMap map[int]int
 }
 
 //SetLineWidth : set line width
@@ -278,8 +284,38 @@ func (gp *GoPdf) Image(picPath string, x float64, y float64, rect *Rect) error {
 	return gp.ImageByHolder(imgh, x, y, rect)
 }
 
+func (gp *GoPdf) AddPageNumbers(x, y float64) error {
+	if gp.pageMap != nil{
+		gp.pageMap[gp.pageCount] = gp.indexOfContent
+	}
+	pageNum := 1
+	for pageNum <= gp.pageCount {
+		text := fmt.Sprintf("%d/%d", pageNum, gp.pageCount)
+		gp.curr.X = x
+		gp.curr.Y = y
+		err := gp.curr.Font_ISubset.AddChars(text)
+		if err != nil {
+			return err
+		}
+		indexOfContent := gp.pageMap[pageNum]
+		err = gp.pdfObjs[indexOfContent].(*ContentObj).AppendStreamText(text)
+		if err != nil {
+			return err
+		}
+		pageNum++
+	}
+
+	return nil
+}
+
 //AddPage : add new page
 func (gp *GoPdf) AddPage() {
+	if gp.pageMap == nil {
+		gp.pageMap = make(map[int]int)
+	} else {
+		gp.pageMap[gp.pageCount] = gp.indexOfContent
+	}
+	gp.pageCount++;
 	emptyOpt := PageOption{}
 	gp.AddPageWithOption(emptyOpt)
 }
