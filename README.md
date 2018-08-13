@@ -1,7 +1,9 @@
 gopdf
 ====
+This is a clone from https://github.com/signintech/gopdf. I've added a method to insert 
+page numbers at the bottom of the page.
 
-gopdf is a simple library for generating PDF document written in Go lang.
+gopdf is a simple library for generating PDF document written in Go lang. 
 
 
 #### Features
@@ -11,6 +13,10 @@ gopdf is a simple library for generating PDF document written in Go lang.
 - Draw image ( jpg, png )
 - Password protection
 - Font [kerning](https://en.wikipedia.org/wiki/Kerning)
+- Automatic page numbering at the bottom of the page in the format <page_num>/<total_pages>
+    ```golang
+       pdf.AddPageNumbers(x,y) 
+    ```
 
 
 ## Installation
